@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo '⚡ Building the project...'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo '🚀 (Placeholder) Deploying to Render...'
+                sh 'node -v'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Build and deploy successful!'
+        }
+        failure {
+            echo '❌ Build or deploy failed.'
+        }
+    }
+}
