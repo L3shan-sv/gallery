@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:20-alpine'
-            args '-u root:root' // optional, for permission issues
-        }
-    }
+    agent any
 
     stages {
         stage('Checkout') {
@@ -38,4 +33,3 @@ pipeline {
         failure { echo '❌ Build or deploy failed!' }
     }
 }
-
