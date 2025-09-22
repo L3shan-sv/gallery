@@ -1,15 +1,25 @@
 pipeline {
-    agent any
+    agent {
+        docker { image 'node:20-alpine' }  // Runs all stages inside a Node.js container
+    }
+
+    environment {
+        REPO_URL = 'https://github.com/L3shan-sv/gallery.git'
+        BRANCH = 'master'
+    }
 
     stages {
+
         stage('Checkout') {
             steps {
-                checkout scm
+                echo '🔄 Checking out code...'
+                git branch: "${BRANCH}", url: "${REPO_URL}"
             }
         }
 
         stage('Install Dependencies') {
             steps {
+                echo '📦 Installing npm dependencies...'
                 sh 'npm install'
             }
         }
@@ -17,13 +27,15 @@ pipeline {
         stage('Build') {
             steps {
                 echo '⚡ Building the project...'
+                // Add any build steps here if needed
             }
         }
 
         stage('Deploy') {
             steps {
-                echo '🚀 (Placeholder) Deploying to Render...'
-                sh 'node -v'
+                echo '🚀 Deploying project...'
+                // Example: you can start your server locally (for testing)
+                sh 'node server.js &'
             }
         }
     }
@@ -33,7 +45,7 @@ pipeline {
             echo '✅ Build and deploy successful!'
         }
         failure {
-            echo '❌ Build or deploy failed.'
+            echo '❌ Build or deploy failed. Check the logs!'
         }
     }
 }
