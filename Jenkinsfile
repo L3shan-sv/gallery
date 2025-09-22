@@ -4,12 +4,14 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master', url: 'https://github.com/L3shan-sv/gallery.git'
+                echo '🔄 Checking out code...'
+                git url: 'https://github.com/L3shan-sv/gallery.git', branch: 'master'
             }
         }
 
         stage('Install Dependencies') {
             steps {
+                echo '📦 Installing npm dependencies...'
                 sh 'npm install'
             }
         }
@@ -22,14 +24,18 @@ pipeline {
 
         stage('Deploy') {
             steps {
+                echo '🚀 Deploying...'
                 sh 'node -v'
-                echo '🚀 Deployment placeholder'
             }
         }
     }
 
     post {
-        success { echo '✅ Build and deploy successful!' }
-        failure { echo '❌ Build or deploy failed!' }
+        success {
+            echo '✅ Build and deploy successful!'
+        }
+        failure {
+            echo '❌ Build or deploy failed.'
+        }
     }
 }
