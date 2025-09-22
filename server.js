@@ -1,38 +1,45 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
-
-// Load config file
 const config = require('./_config');
 
-// Define routes
-let index = require('./routes/index');
-let image = require('./routes/image');
+const index = require('./routes/index');
+const image = require('./routes/image');
 
-// connecting the database (Atlas URI from _config.js)
-mongoose.connect(config.mongoURI.development, { 
-    useNewUrlParser: true, 
-    useUnifiedTopology: true 
-})
-.then(() => console.log('✅ Database connected successfully'))
-.catch(err => console.error('❌ Database connection error:', err));
-
-// Initializing the app
 const app = express();
 
-// View Engine
+// View engine
 app.set('view engine', 'ejs');
 
-// Set up the public folder
+// Static folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// body parser middleware
+// Body parser
 app.use(express.json());
 
+// Routes
 app.use('/', index);
 app.use('/image', image);
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () =>{
-    console.log(`🚀 Server is listening at http://localhost:${PORT}`);
-});
+// MongoDB connection function
+const env = process.env.NODE_ENV || 'development';
+const MONGODB_URI = config.mongoURI[env];
+
+async function connectDB() {
+    try {
+        await mongoose.connect(MONGODB_URI);
+        console.log(`✅ Connected to Database: ${MONGODB_URI}`);
+    } catch (err) {
+        console.error('❌ MongoDB connection error:', err);
+    }
+}
+
+// Start server only if not in test
+if (env !== 'test') {
+    connectDB().then(() => {
+        const PORT = process.env.PORT || 5000;
+        app.listen(PORT, () => console.log(`Server listening at http://localhost:${PORT}`));
+    });
+}
+
+module.exports = { app, connectDB };
