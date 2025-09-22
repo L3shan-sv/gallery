@@ -1,5 +1,10 @@
 pipeline {
-    agent any  // Use the Jenkins node where Node.js is installed
+    agent {
+        docker {
+            image 'node:20-alpine'
+            args '-u root:root' // optional, for permission issues
+        }
+    }
 
     stages {
         stage('Checkout') {
@@ -22,18 +27,15 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo '🚀 Deploying...'
                 sh 'node -v'
+                echo '🚀 Deployment placeholder'
             }
         }
     }
 
     post {
-        success {
-            echo '✅ Build and deploy successful!'
-        }
-        failure {
-            echo '❌ Build or deploy failed!'
-        }
+        success { echo '✅ Build and deploy successful!' }
+        failure { echo '❌ Build or deploy failed!' }
     }
 }
+
