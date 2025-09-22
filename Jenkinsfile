@@ -1,35 +1,28 @@
 pipeline {
-    agent {
-        docker { 
-            image 'node:20-alpine'  // Uses Node.js 20 in a lightweight Alpine container
-        }
-    }
+    agent any  // Use the Jenkins node where Node.js is installed
 
     stages {
         stage('Checkout') {
             steps {
-                echo "🔄 Checking out code..."
-                checkout scm
+                git branch: 'master', url: 'https://github.com/L3shan-sv/gallery.git'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                echo "📦 Installing npm dependencies..."
                 sh 'npm install'
             }
         }
 
         stage('Build') {
             steps {
-                echo "⚡ Building the project..."
-                // Add any build steps here if needed
+                echo '⚡ Building the project...'
             }
         }
 
         stage('Deploy') {
             steps {
-                echo "🚀 Deploy placeholder..."
+                echo '🚀 Deploying...'
                 sh 'node -v'
             }
         }
@@ -37,11 +30,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Build and deploy successful!"
+            echo '✅ Build and deploy successful!'
         }
         failure {
-            echo "❌ Build or deploy failed!"
+            echo '❌ Build or deploy failed!'
         }
     }
 }
-
