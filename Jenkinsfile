@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        NODE_ENV = 'test'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -16,9 +20,24 @@ pipeline {
             }
         }
 
+        stage('Run Tests') {
+            steps {
+                echo '🧪 Running tests...'
+                script {
+                    try {
+                        sh 'npm test'
+                    } catch (err) {
+                        currentBuild.result = 'FAILURE'
+                        error "Tests failed! See console output for details."
+                    }
+                }
+            }
+        }
+
         stage('Build') {
             steps {
                 echo '⚡ Building the project...'
+                // Add any build steps if needed
             }
         }
 
@@ -32,10 +51,13 @@ pipeline {
 
     post {
         success {
-            echo '✅ Build and deploy successful!'
+            echo '✅ Build, tests, and deploy successful!'
         }
         failure {
-            echo '❌ Build or deploy failed.'
+            echo '❌ Build, test, or deploy failed. Sending email...'
+            mail to: 'your_email@example.com',
+                 subject: "Jenkins Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "The build has failed. Please check Jenkins for details: ${env.BUILD_URL}"
         }
     }
 }
